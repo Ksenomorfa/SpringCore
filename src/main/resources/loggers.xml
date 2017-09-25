@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
- 		http://www.springframework.org/schema/beans
- 		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ 		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <bean id="eventLogger" class="tkachCourses.ConsoleEventLogger">
+    <bean id="consoleEventLogger" class="tkachCourses.ConsoleEventLogger">
     </bean>
 
     <bean id="fileEventLogger" class="tkachCourses.FileEventLogger"
@@ -16,8 +15,21 @@
     <bean id="cacheEventLogger" class="tkachCourses.CacheFileEventLogger"
           parent="fileEventLogger"
             destroy-method="destroy">
-        <constructor-arg value="5"/>
+        <constructor-arg index="1"  value="5"/>
     </bean>
 
+    <bean id="combinedEventLogger" class="tkachCourses.CombinedEventLogger">
+        <constructor-arg>
+            <list>
+                <ref bean="fileEventLogger"/>
+                <ref bean="consoleEventLogger"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <util:map id="loggerMap">
+        <entry key="INFO" value-ref="consoleEventLogger"/>
+        <entry key="ERROR" value-ref="combinedEventLogger"/>
+    </util:map>
 
 </beans>
